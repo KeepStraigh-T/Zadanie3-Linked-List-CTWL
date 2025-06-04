@@ -202,6 +202,10 @@ TWN* ctwl_insert_left(CTWL* list, float data)
 	}
 
 	TWN* new_node = twn_create_node(data);
+
+	if(new_node == NULL)
+		return NULL;
+
 	TWN* temp = list->cur->prev;
 
 	list->cur->prev = new_node;
@@ -239,4 +243,99 @@ char ctwl_delete(CTWL* list)
 	free(to_delete);
 
 	return CWTL_OK;
+}
+
+CTWL* ctwl_cyclic_cover(CTWL* list, unsigned int period)
+{
+	if(list == NULL || list->cur == NULL)
+		return NULL;
+
+	if(period == 0)
+		return NULL;
+
+	unsigned int list_length = ctwl_length(list);
+
+	if(list_length % period != 0)
+	{ 
+		printf("Period does not divide list_length without reminder\n");
+		return NULL;
+	}
+
+	// List that covers initial list has equal size
+	else if(period == list_length)
+	{
+		CTWL* cover_list = list;
+		return cover_list;
+	}
+
+	// Cover list has only one node
+	else if(period == 1)
+	{
+		TWN* temp = list->cur;
+		float value = 0;
+
+		// Sum of values of all nodes of initial list
+		do
+		{
+			value += list->cur->data;
+			list->cur = list->cur->next;
+		} while(list->cur != temp);
+
+		CTWL* cover_list = ctwl_create_random(1);
+
+		if(cover_list == NULL)
+			return NULL;
+
+		cover_list->cur->data = value;
+
+		return cover_list;
+	}
+
+	else if(list_length % period == 0)
+	{
+		CTWL* cover_list = ctwl_create_empty();
+
+		if(cover_list == NULL)
+			return NULL;
+
+		TWN* init_pos = list->cur;
+		unsigned int cover_width = list_length / period;
+		
+		for(unsigned i = 0; i < period; i++)
+		{
+			float temp_data = 0;
+			
+			for(unsigned j = 0; j < cover_width; j++)
+			{
+				temp_data += list->cur->data;
+
+				for(unsigned step = 0; step < period; step++)
+					ctwl_cursor_step_right(list);
+			}
+
+			TWN* cover_node = ctwl_insert_left(cover_list, temp_data);
+			
+			if(cover_node == NULL)
+			{
+				printf("Failed to create or insert node in cover list\n");
+				ctwl_destroy(cover_list);
+				return NULL;
+			}
+
+			list->cur = list->cur->next;
+		}
+
+		list->cur = init_pos;
+		
+		return cover_list;
+	}
+
+	else
+	{
+		printf("Undefined error\n");
+		return NULL;
+	}
+	
+	
+
 }

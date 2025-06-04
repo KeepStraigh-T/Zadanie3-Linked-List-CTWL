@@ -30,4 +30,5 @@ void ctwl_cursor_step_left(CTWL* list);
 TWN* ctwl_insert_right(CTWL* list, float data);
 TWN* ctwl_insert_left(CTWL* list, float data);
 char ctwl_delete(CTWL* list);
+CTWL* ctwl_cyclic_cover(CTWL* list, unsigned int period);
 #endif

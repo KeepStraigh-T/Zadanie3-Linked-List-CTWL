@@ -6,7 +6,6 @@
 TWN* twn_create_node(float new_data)
 {
 	TWN* new_node = (TWN*) malloc(sizeof(TWN));
-
 	if(new_node == NULL)
 		return NULL;
 
@@ -14,13 +13,12 @@ TWN* twn_create_node(float new_data)
 	new_node->next = new_node;
 	new_node->prev = new_node;
 
-	return new_node;	
+	return new_node;
 }
 
 TWN* twn_create_node_random(void)
 {
 	TWN* new_node = (TWN*) malloc(sizeof(TWN));
-
 	if(new_node == NULL)
 		return NULL;
 
@@ -33,7 +31,6 @@ TWN* twn_create_node_random(void)
 CTWL* ctwl_create_empty(void)
 {
 	CTWL* list = (CTWL*) malloc(sizeof(CTWL));
-
 	if(list == NULL)
 		return NULL;
 
@@ -44,12 +41,17 @@ CTWL* ctwl_create_empty(void)
 
 void ctwl_destroy(CTWL* list)
 {
-	if(list == NULL || list->cur == NULL)
+	if(list == NULL)
 		return;
+	else if(list->cur == NULL)
+	{
+		free(list);
+		return;
+	}
 	
-	TWN* next;
 	TWN* start = list->cur;
 	TWN* temp = start->next;
+	TWN* next;
 		
 	while (temp != start)
 	{
@@ -59,7 +61,6 @@ void ctwl_destroy(CTWL* list)
 	}
 
 	free(start);
-
 	free(list);
 }
 
@@ -71,12 +72,10 @@ CTWL* ctwl_create_random(unsigned int size)
 
 	if(list == NULL)
 		return NULL;
-
-	if(size == 0)
+	else if(size == 0)
 		return list;
 
 	head = twn_create_node_random(); // First node in the list
-
 	if(head == NULL)
 	{
 		free(list);
@@ -89,19 +88,18 @@ CTWL* ctwl_create_random(unsigned int size)
 	for(unsigned int i = 1; i < size; i++)
 	{
 		new_node = twn_create_node_random();
-		
 		if(new_node == NULL)
 		{
 			ctwl_destroy(list);
 			printf("List creation failed");
 			return NULL;
 		}
-		
+		// Connect nodes
 		previous->next = new_node;
 		new_node->prev = previous;
 		previous = new_node;
 	}
-
+	// Connect first and last nodes
 	head->prev = previous;
 	previous->next = head;
 
@@ -120,7 +118,7 @@ void ctwl_print_list(CTWL* list)
 		if(temp == NULL)
 		{
 			printf("One of the nodes has pointer to NULL\n");
-			break;
+			return;
 		}
 
 		printf("%0.2f\n", temp->data);
@@ -174,11 +172,17 @@ TWN* ctwl_insert_right(CTWL* list, float data)
 	if(list->cur == NULL) // If the list has no nodes
 	{
 		TWN* first_node = twn_create_node(data);
+		if(first_node == NULL)
+			return NULL;
+
 		list->cur = first_node;
 		return first_node;
 	}
 
 	TWN* new_node = twn_create_node(data);
+	if(new_node == NULL)
+		return NULL;
+
 	TWN* temp = list->cur->next;
 	
 	list->cur->next = new_node;
@@ -197,12 +201,14 @@ TWN* ctwl_insert_left(CTWL* list, float data)
 	if(list->cur == NULL) // If the list has no nodes
 	{
 		TWN* first_node = twn_create_node(data);
+		if(first_node == NULL)
+			return NULL;
+
 		list->cur = first_node;
 		return first_node;
 	}
 
 	TWN* new_node = twn_create_node(data);
-
 	if(new_node == NULL)
 		return NULL;
 
@@ -220,16 +226,15 @@ char ctwl_delete(CTWL* list)
 {
 	if(list == NULL)
 		return LIST_ERROR;
-
 	if(list->cur == NULL)
-		return CWTL_FAIL;
+		return CTWL_FAIL;
 	
 // If only one node in the list
 	if(list->cur->next == list->cur && list->cur->prev == list->cur)
 	{
 		free(list->cur);
 		list->cur = NULL;
-		return CWTL_OK;
+		return CTWL_OK;
 	}
 
 	TWN* to_delete = list->cur;
@@ -242,5 +247,5 @@ char ctwl_delete(CTWL* list)
 	
 	free(to_delete);
 
-	return CWTL_OK;
+	return CTWL_OK;
 }

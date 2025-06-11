@@ -1,8 +1,10 @@
 #ifndef _CTWL_
 #define _CTWL_
 
-#define CWTL_OK 1
-#define CWTL_FAIL -1
+#define CTWL_OK 1
+#define CTWL_FAIL -1
+#define PRINT_OK 2
+#define PRINT_FAIL -2
 #define LIST_ERROR -10
 
 
